@@ -1,0 +1,335 @@
+import React, { useState, useRef } from "react";
+import EmojiPicker from "emoji-picker-react";
+import profile from "../assets/images/profile.png";
+import {
+  FaPlus,
+  FaRegFile,
+  FaCalendarCheck,
+  FaMagic,
+  FaRegComment,
+  FaRetweet,
+  FaHeart,
+  FaShare,
+} from "react-icons/fa";
+import { FaSmile } from "react-icons/fa";
+export default function MainContainer() {
+  // Tweet Input & Tweets state
+  const [tweetText, setTweetText] = useState("");
+  const [tweets, setTweets] = useState([]);
+
+  // File input ref
+  const fileInputRef = useRef(null);
+
+  // Emoji Picker state
+  const [emojiPickerVisible, setEmojiPickerVisible] = useState(false);
+  const handleEmojiClick = (emojiData) => {
+    setTweetText(tweetText + emojiData.emoji);
+    setEmojiPickerVisible(false);
+  };
+
+  // Create a new tweet (each tweet gets its own "liked" property and comments array)
+  const handleTweet = () => {
+    if (tweetText.trim() !== "") {
+      setTweets([
+        {
+          id: Date.now(),
+          user: "John Doe",
+          username: "@johndoe",
+          time: "just now",
+          content: tweetText,
+          liked: false,
+          comments: [],
+        },
+        ...tweets,
+      ]);
+      setTweetText("");
+    }
+  };
+
+  // File handling
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      console.log("Selected file:", file);
+    }
+  };
+
+  // Toggle like state for a tweet (by tweet id)
+  const handleHeartClick = (id) => {
+    setTweets((prevTweets) =>
+      prevTweets.map((tweet) =>
+        tweet.id === id ? { ...tweet, liked: !tweet.liked } : tweet
+      )
+    );
+  };
+
+  // --- COMMENT FUNCTIONALITY ---
+  // Which tweet's comment box is open?
+  const [openCommentTweetId, setOpenCommentTweetId] = useState(null);
+  // Current comment text in the comment box
+  const [commentText, setCommentText] = useState("");
+
+  // Open the comment box for a specific tweet
+  const handleOpenCommentBox = (tweetId) => {
+    setOpenCommentTweetId(tweetId);
+  };
+
+  // Post the comment to the tweet and close the comment box.
+  const handleCommentPost = () => {
+    if (commentText.trim() !== "" && openCommentTweetId) {
+      setTweets((prevTweets) =>
+        prevTweets.map((tweet) => {
+          if (tweet.id === openCommentTweetId) {
+            const newComment = { id: Date.now(), text: commentText };
+            return { ...tweet, comments: [...tweet.comments, newComment] };
+          }
+          return tweet;
+        })
+      );
+      setCommentText("");
+      setOpenCommentTweetId(null);
+    }
+  };
+
+  // Close the comment box without posting a comment
+  const handleCancelComment = () => {
+    setCommentText("");
+    setOpenCommentTweetId(null);
+  };
+  // --- END COMMENT FUNCTIONALITY ---
+
+  // "Who to Follow" Section
+  const whoToFollow = [
+    {
+      id: 1,
+      img: profile,
+      pholder: "Ellie Jamie and 20 others follow",
+      name: "Linda Shelton #BlackLivesMatter",
+      username: "@Linda_shelton",
+      bio: "WordPress/PHP Geek, JavaScript Developer, Tools Creator, Always ready to help with code",
+    },
+    {
+      id: 2,
+      img: profile,
+      pholder: "Ellie Jamie and 15 others follow",
+      name: "Mark Anderson",
+      username: "@mark_anderson",
+      bio: "Frontend Developer, React Enthusiast, Open-source Contributor",
+    },
+  ];
+  const handleClearTweets = () => {
+    setTweets([]);
+  };
+  // Follow state for each user (keyed by user id)
+  const [followStates, setFollowStates] = useState({});
+  const handleFollowClick = (id) => {
+    setFollowStates((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  return (
+    <div className="flex flex-col w-full max-w-2xl mx-auto border-x border-gray-200 bg-blue-100">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
+        <h2 className="text-lg font-bold">Home</h2>
+        <FaMagic
+          onClick={handleClearTweets}
+          className="text-blue-500 cursor-pointer "
+        />
+      </div>
+
+      {/* Tweet Input Section */}
+      <div className="bg-white p-4 border-b border-gray-200">
+        <div className="flex items-start space-x-4">
+          <img
+            src={profile}
+            alt="User Avatar"
+            className="w-10 h-10 rounded-full bg-blue-200"
+          />
+          <div className="flex flex-col w-full relative">
+            <input
+              type="text"
+              placeholder="What's happening"
+              value={tweetText}
+              onChange={(e) => setTweetText(e.target.value)}
+              className="w-full text-lg border-none focus:ring-0 outline-none"
+            />
+            <div className="flex justify-between items-center mt-3 text-blue-500 ">
+              <div className="flex space-x-3 ">
+                {/* File input trigger */}
+                <FaPlus
+                  className="cursor-pointer text-xl"
+                  onClick={() => fileInputRef.current.click()}
+                />
+                <FaRegFile className="cursor-pointer text-xl fill-current" />
+                <FaSmile
+                  className="cursor-pointer text-xl  "
+                  onClick={() => setEmojiPickerVisible(!emojiPickerVisible)}
+                />
+                <FaCalendarCheck className="cursor-pointer text-xl" />
+              </div>
+              <button
+                onClick={handleTweet}
+                className="bg-blue-500 text-white px-4 py-2 rounded-full font-semibold"
+              >
+                Tweet
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
+              {emojiPickerVisible && (
+                <div className="absolute mt-2 z-10">
+                  <EmojiPicker onEmojiClick={handleEmojiClick} />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tweets Section */}
+      <div className="divide-y divide-gray-200">
+        {tweets.map((tweet) => (
+          <div key={tweet.id} className="p-4 border-b border-gray-200">
+            <div className="flex space-x-4">
+              <img
+                src={profile}
+                alt="User Avatar"
+                className="w-10 h-10 rounded-full"
+              />
+              <div className="flex-1">
+                <p className="font-bold">
+                  {tweet.user}{" "}
+                  <span className="text-gray-500">
+                    {tweet.username} · {tweet.time}
+                  </span>
+                </p>
+                <p className="text-gray-700">{tweet.content}</p>
+                <div className="flex justify-between text-gray-500 mt-2">
+                  <div
+                    className="flex items-center space-x-1 cursor-pointer hover:text-blue-500"
+                    onClick={() => handleOpenCommentBox(tweet.id)}
+                  >
+                    <FaRegComment /> <span>Comment</span>
+                  </div>
+                  <div className="flex items-center space-x-1 cursor-pointer hover:text-green-500">
+                    <FaRetweet /> <span>0</span>
+                  </div>
+                  <div className="flex items-center space-x-1 cursor-pointer">
+                    <div
+                      className="group flex items-center space-x-1 cursor-pointer"
+                      onClick={() => handleHeartClick(tweet.id)}
+                    >
+                      <FaHeart
+                        className={`${
+                          tweet.liked
+                            ? "text-red-500"
+                            : "text-gray-500 group-hover:text-red-500"
+                        }`}
+                      />
+                      <span
+                        className={`${
+                          tweet.liked
+                            ? "text-red-500"
+                            : "text-gray-500 group-hover:text-red-500"
+                        }`}
+                      >
+                        {tweet.liked ? 1 : 0}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="cursor-pointer hover:text-blue-500">
+                    <FaShare />
+                  </div>
+                </div>
+                {/* Show Comments Modal for the Tweet */}
+                {openCommentTweetId === tweet.id && (
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border p-4 w-80 rounded-md shadow-lg">
+                    <h3 className="font-semibold">Comments</h3>
+                    <textarea
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      placeholder="Write a comment..."
+                      className="w-full h-24 border p-2 mt-2"
+                    />
+                    <div className="flex justify-between mt-2">
+                      <button
+                        onClick={handleCancelComment}
+                        className="text-gray-500"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleCommentPost}
+                        className="bg-blue-500 text-white px-4 py-2 rounded"
+                      >
+                        Post Comment
+                      </button>
+                    </div>
+                    <div className="mt-3">
+                      {tweet.comments.map((comment) => (
+                        <div
+                          key={comment.id}
+                          className="text-sm text-gray-600 mt-2"
+                        >
+                          {comment.text}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Who to Follow Section */}
+      <div className="border-t border-gray-200 bg-gray-50 my-6">
+        <h2 className="font-bold text-lg p-4">Who to follow</h2>
+        <div className="divide-y divide-gray-200">
+          {whoToFollow.map((user) => (
+            <div key={user.id} className="p-4 flex items-start space-x-4">
+              <img
+                src={profile}
+                alt="User Avatar"
+                className="w-10 h-10 rounded-full"
+              />
+              <div className="flex-1">
+                <div className="flex gap-5">
+                  <img
+                    src={"https://via.placeholder.com/150"}
+                    alt="User"
+                    className="h-4 w-4 rounded-full"
+                  />
+                  <p className="text-gray-400">{user.pholder}</p>
+                </div>
+                <p className="font-semibold">{user.name}</p>
+                <p className="text-gray-400 text-base">{user.username}</p>
+                <p className="text-gray-700 text-base">{user.bio}</p>
+              </div>
+              <button
+                onClick={() => handleFollowClick(user.id)}
+                className={`border px-3 py-1 rounded-full font-semibold ${
+                  followStates[user.id]
+                    ? "bg-blue-500 text-white"
+                    : "border-blue-500 text-blue-500 hover:bg-blue-100"
+                }`}
+              >
+                {followStates[user.id] ? "Following" : "+ Follow"}
+              </button>
+            </div>
+          ))}
+        </div>
+        <div className="p-4 text-blue-500 text-base font-normal text-center cursor-pointer hover:underline justify-center">
+          See all suggestions
+        </div>
+      </div>
+    </div>
+  );
+}
