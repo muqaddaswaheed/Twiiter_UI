@@ -205,12 +205,12 @@ export default function MainContainer() {
               <div className="flex-1">
                 <p className="font-bold">
                   {tweet.user}{" "}
-                  <span className="text-gray-500">
+                  <span className="text-gray-500 font-normal">
                     {tweet.username} · {tweet.time}
                   </span>
                 </p>
                 <p className="text-gray-700">{tweet.content}</p>
-                <div className="flex justify-between text-gray-500 mt-2">
+                <div className="flex justify-around text-gray-500 mt-2">
                   <div
                     className="flex items-center space-x-1 cursor-pointer hover:text-blue-500"
                     onClick={() => handleOpenCommentBox(tweet.id)}
