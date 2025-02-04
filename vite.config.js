@@ -4,9 +4,9 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
   ],
-  build: {
-    outDir: "dist", 
-  }, server: {
-    historyApiFallback: true
-  }
+  // build: {
+  //   outDir: "dist", 
+  // }, server: {
+  //   historyApiFallback: true
+  // }
 })
