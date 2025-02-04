@@ -130,33 +130,33 @@ export default function MainContainer() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-2xl mx-auto border-x border-gray-200 bg-blue-100">
+    <div className="flex flex-col w-full   border-x border-gray-200 bg-gray-200">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200  bg-white">
         <h2 className="text-lg font-bold">Home</h2>
         <FaMagic
           onClick={handleClearTweets}
-          className="text-blue-500 cursor-pointer "
+          className="text-[#198ED6] cursor-pointer "
         />
       </div>
 
       {/* Tweet Input Section */}
-      <div className="bg-white p-4 border-b border-gray-200">
+      <div className="bg-white p-4 border-b border-gray-200 ">
         <div className="flex items-start space-x-4">
           <img
             src={profile}
             alt="User Avatar"
-            className="w-10 h-10 rounded-full bg-blue-200"
+            className="w-10 h-10 rounded-full  bg-gray-200"
           />
-          <div className="flex flex-col w-full relative">
+          <div className="flex gap-1 h-26 flex-col w-full relative">
             <input
               type="text"
               placeholder="What's happening"
               value={tweetText}
               onChange={(e) => setTweetText(e.target.value)}
-              className="w-full text-lg border-none focus:ring-0 outline-none"
+              className="w-full text-base my-3 font-semibold text-gray-500 border-none focus:ring-0 outline-none"
             />
-            <div className="flex justify-between items-center mt-3 text-blue-500 ">
+            <div className="flex justify-between items-center mt-3 text-[#198ED6] ">
               <div className="flex space-x-3 ">
                 {/* File input trigger */}
                 <FaPlus
@@ -172,7 +172,7 @@ export default function MainContainer() {
               </div>
               <button
                 onClick={handleTweet}
-                className="bg-blue-500 text-white px-4 py-2 rounded-full font-semibold"
+                className="bg-[#198ED6] text-white px-4 py-2 rounded-full cursor-pointer font-semibold"
               >
                 Tweet
               </button>
@@ -215,7 +215,7 @@ export default function MainContainer() {
                     className="flex items-center space-x-1 cursor-pointer hover:text-blue-500"
                     onClick={() => handleOpenCommentBox(tweet.id)}
                   >
-                    <FaRegComment /> <span>Comment</span>
+                    <FaRegComment /> <span></span>
                   </div>
                   <div className="flex items-center space-x-1 cursor-pointer hover:text-green-500">
                     <FaRetweet /> <span>0</span>
@@ -290,7 +290,7 @@ export default function MainContainer() {
       </div>
 
       {/* Who to Follow Section */}
-      <div className="border-t border-gray-200 bg-gray-50 my-6">
+      <div className="border-t border-gray-200 bg-white my-6">
         <h2 className="font-bold text-lg p-4">Who to follow</h2>
         <div className="divide-y divide-gray-200">
           {whoToFollow.map((user) => (
@@ -301,7 +301,7 @@ export default function MainContainer() {
                 className="w-10 h-10 rounded-full"
               />
               <div className="flex-1">
-                <div className="flex gap-5">
+                <div className="flex gap-2">
                   <img
                     src={"https://via.placeholder.com/150"}
                     alt="User"
@@ -318,7 +318,7 @@ export default function MainContainer() {
                 className={`border px-3 py-1 rounded-full font-semibold ${
                   followStates[user.id]
                     ? "bg-blue-500 text-white"
-                    : "border-blue-500 text-blue-500 hover:bg-blue-100"
+                    : "border-blue-500 text-[#198ED6] hover:bg-blue-100 cursor-pointer"
                 }`}
               >
                 {followStates[user.id] ? "Following" : "+ Follow"}

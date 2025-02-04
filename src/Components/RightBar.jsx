@@ -61,62 +61,66 @@ const RightBar = () => {
   };
 
   return (
-    <div className="relative w-80 h-screen pl-6 mr-6 shadow-md p-4 bg-white">
-      <div className="flex items-center bg-gray-200 rounded-full px-5 py-3 w-64">
+    <div className="relative w-80 h-screen pl-6 mr-6 mx-6 p-4 bg-white max-h-[700px] overflow-y-auto">
+      <div className="flex w-full items-center bg-gray-200 rounded-full px-5 py-3">
         <FaSearch className="text-gray-500 text-lg mr-2" />
         <input
-          className="outline-none w-full text-gray-700"
+          className="outline-none w-full text-gray-700 font-bold"
           type="text"
           placeholder="Search Twitter"
           value={searchQuery}
           onChange={handleSearchChange}
         />
       </div>
-      <div className="flex justify-between items-center p-4 mt-5 bg-gray-100 rounded-lg">
-        <h1 className="text-xl font-bold text-gray-700">Trends For You</h1>
-        <div className="p-2 rounded-full bg-transparent hover:bg-blue-200 transition duration-200 cursor-pointer">
-          <FaCog className="text-blue-500 text-xl hover:text-blue-700" />
+      <div className="fulltrends bg-gray-100 rounded mt-5">
+        <div className="flex justify-between items-center p-4 rounded-lg">
+          <h1 className="text-xl font-bold text-gray-700 w-full">
+            Trends For You
+          </h1>
+          <div className=" rounded-full bg-transparent hover:bg-blue-200 transition duration-200 cursor-pointer">
+            <FaCog className="text-[#198ED6] text-xl cursor-pointer hover:text-blue-700" />
+          </div>
         </div>
-      </div>
-      <div className="w-full max-w-md mx-auto p-4 bg-white shadow-lg rounded-lg">
-        {filteredTweets.slice(0, visibleTweets).map((tweet, index) => (
-          <div
-            key={index}
-            className="border-b border-gray-300 py-3 hover:bg-blue-100"
-          >
-            <div className="flex justify-between items-center">
-              <span className="text-lg font-bold text-gray-800">
-                {tweet.name}
-              </span>
-              <button
-                onClick={() => toggleTweet(index)}
-                className="text-gray-600 hover:text-blue-500 transition"
-              >
-                {openIndex === index ? <FaChevronUp /> : <FaChevronDown />}
-              </button>
-            </div>
-            {openIndex === index ? (
-              <div className="mt-2 p-2 rounded-md">
-                <p className="text-gray-700">{tweet.desc}</p>
-                <span className="text-sm font-semibold text-gray-600 block mt-1">
+        <div className="w-full max-w-md mx-auto p-4 shadow-lg rounded-lg ">
+          {filteredTweets.slice(0, visibleTweets).map((tweet, index) => (
+            <div
+              key={index}
+              className="border-b border-gray-300 py-3 cursor-pointer hover:bg-blue-100"
+            >
+              <div className="flex justify-between items-center w-full">
+                <span className="text-lg font-bold text-gray-800 w-full">
+                  {tweet.name}
+                </span>
+                <button
+                  onClick={() => toggleTweet(index)}
+                  className="text-gray-600 hover:text-blue-500 transition cursor-pointer"
+                >
+                  {openIndex === index ? <FaChevronUp /> : <FaChevronDown />}
+                </button>
+              </div>
+              {openIndex === index ? (
+                <div className="mt-2 p-2 rounded-md">
+                  <p className="text-gray-700">{tweet.desc}</p>
+                  <span className="text-sm font-semibold text-gray-600 block mt-1">
+                    {tweet.tweetCount} Tweets
+                  </span>
+                </div>
+              ) : (
+                <span className="text-sm text-gray-600">
                   {tweet.tweetCount} Tweets
                 </span>
-              </div>
-            ) : (
-              <span className="text-sm text-gray-600">
-                {tweet.tweetCount} Tweets
-              </span>
-            )}
-          </div>
-        ))}
-        {visibleTweets < filteredTweets.length && (
-          <button
-            onClick={loadMoreTweets}
-            className="text-blue-500 hover:underline mt-3 block  text-sm"
-          >
-            See More
-          </button>
-        )}
+              )}
+            </div>
+          ))}
+          {visibleTweets < filteredTweets.length && (
+            <button
+              onClick={loadMoreTweets}
+              className="text-blue-500 hover:underline mt-3 block text-sm"
+            >
+              See More
+            </button>
+          )}
+        </div>
       </div>
       <div className="mt-5 text-gray-700 text-xs text-center space-x-3">
         <span className="hover:underline cursor-pointer">Terms</span>

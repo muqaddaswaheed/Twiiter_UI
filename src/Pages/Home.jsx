@@ -10,7 +10,7 @@ const Home = () => {
       <SideBar />
 
       {/* Main Content */}
-      <div className="bg-white p-6">
+      <div className="bg-white">
         {/* Main content goes here */}
         <Main_Container />
       </div>

@@ -29,7 +29,7 @@ const SideBar = () => {
   };
   return (
     <>
-      <div className="relative w-64 h-screen bg-white shadow-md p-4">
+      <div className="relative w-72 h-screen bg-white  p-4">
         <aside className="flex flex-col h-full mx-auto pl-10">
           <div className="mb-6">
             <img src={twitter} alt="Twitter Logo" className="w-10 h-10 " />
@@ -63,13 +63,13 @@ const SideBar = () => {
           </div>
 
           {/* Tweet Button */}
-          <button className="bg-blue-500 text-white font-semibold text-lg py-2 px-4 rounded-full hover:bg-blue-600 transition duration-300">
+          <button className="bg-blue-600 cursor-pointer text-white font-semibold text-lg py-2 px-4 rounded-full hover:bg-blue-600 transition duration-300">
             Tweet
           </button>
 
           {/* Profile Section */}
           <ul className="mt-auto">
-            <li className="flex items-center gap-3 p-2 hover:bg-blue-200 hover:rounded-full rounded-lg cursor-pointer transition duration-200">
+            <li className="flex items-center gap-3 my-5 hover:bg-blue-200 hover:rounded-full rounded-lg cursor-pointer transition duration-200">
               <img
                 className="w-14 h-14 rounded-full"
                 src={profile}
