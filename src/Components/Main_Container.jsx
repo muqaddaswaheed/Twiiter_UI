@@ -141,7 +141,7 @@ export default function MainContainer() {
       </div>
 
       {/* Tweet Input Section */}
-      <div className="bg-white p-4 border-b border-gray-200 ">
+      <div className="bg-white p-4 border-b border-gray-200 mb-2">
         <div className="flex items-start space-x-4">
           <img
             src={profile}
@@ -195,15 +195,18 @@ export default function MainContainer() {
       {/* Tweets Section */}
       <div className="divide-y divide-gray-200">
         {tweets.map((tweet) => (
-          <div key={tweet.id} className="p-4 border-b border-gray-200">
-            <div className="flex space-x-4">
+          <div
+            key={tweet.id}
+            className="p-4 border-b border-gray-200 bg-white "
+          >
+            <div className="flex space-x-4 ">
               <img
                 src={profile}
                 alt="User Avatar"
                 className="w-10 h-10 rounded-full"
               />
-              <div className="flex-1">
-                <p className="font-bold">
+              <div className="flex-1 ">
+                <p className="font-bold ">
                   {tweet.user}{" "}
                   <span className="text-gray-500 font-normal">
                     {tweet.username} · {tweet.time}
@@ -257,7 +260,7 @@ export default function MainContainer() {
                       placeholder="Write a comment..."
                       className="w-full h-24 border p-2 mt-2"
                     />
-                    <div className="flex justify-between mt-2">
+                    <div className="flex justify-between mt-2 ">
                       <button
                         onClick={handleCancelComment}
                         className="text-gray-500"
@@ -271,11 +274,11 @@ export default function MainContainer() {
                         Post Comment
                       </button>
                     </div>
-                    <div className="mt-3">
+                    <div className="mt-3 ">
                       {tweet.comments.map((comment) => (
                         <div
                           key={comment.id}
-                          className="text-sm text-gray-600 mt-2"
+                          className="text-sm text-gray-600 mt-2 "
                         >
                           {comment.text}
                         </div>
