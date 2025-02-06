@@ -12,10 +12,17 @@ import {
   FaShare,
 } from "react-icons/fa";
 import { FaSmile } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { addTweet, updateTweet, clearTweets } from "../Redux/tweetSlice";
+import { toggleFollow } from "../Redux/followSlice";
+
 export default function MainContainer() {
+  const dispatch = useDispatch();
+  const tweets = useSelector((state) => state.tweets);
+  const followStates = useSelector((state) => state.follow);
+
   // Tweet Input & Tweets state
   const [tweetText, setTweetText] = useState("");
-  const [tweets, setTweets] = useState([]);
 
   // File input ref
   const fileInputRef = useRef(null);
@@ -27,21 +34,19 @@ export default function MainContainer() {
     setEmojiPickerVisible(false);
   };
 
-  // Create a new tweet (each tweet gets its own "liked" property and comments array)
+  // Create a new tweet
   const handleTweet = () => {
     if (tweetText.trim() !== "") {
-      setTweets([
-        {
-          id: Date.now(),
-          user: "John Doe",
-          username: "@johndoe",
-          time: "just now",
-          content: tweetText,
-          liked: false,
-          comments: [],
-        },
-        ...tweets,
-      ]);
+      const newTweet = {
+        id: Date.now(),
+        user: "John Doe",
+        username: "@johndoe",
+        time: "just now",
+        content: tweetText,
+        liked: false,
+        comments: [],
+      };
+      dispatch(addTweet(newTweet));
       setTweetText("");
     }
   };
@@ -56,34 +61,32 @@ export default function MainContainer() {
 
   // Toggle like state for a tweet (by tweet id)
   const handleHeartClick = (id) => {
-    setTweets((prevTweets) =>
-      prevTweets.map((tweet) =>
-        tweet.id === id ? { ...tweet, liked: !tweet.liked } : tweet
-      )
+    dispatch(
+      updateTweet({
+        id,
+        liked: !tweets.find((tweet) => tweet.id === id).liked,
+      })
     );
   };
 
   // --- COMMENT FUNCTIONALITY ---
-  // Which tweet's comment box is open?
   const [openCommentTweetId, setOpenCommentTweetId] = useState(null);
-  // Current comment text in the comment box
   const [commentText, setCommentText] = useState("");
 
-  // Open the comment box for a specific tweet
   const handleOpenCommentBox = (tweetId) => {
     setOpenCommentTweetId(tweetId);
   };
 
-  // Post the comment to the tweet and close the comment box.
   const handleCommentPost = () => {
     if (commentText.trim() !== "" && openCommentTweetId) {
-      setTweets((prevTweets) =>
-        prevTweets.map((tweet) => {
-          if (tweet.id === openCommentTweetId) {
-            const newComment = { id: Date.now(), text: commentText };
-            return { ...tweet, comments: [...tweet.comments, newComment] };
-          }
-          return tweet;
+      const newComment = { id: Date.now(), text: commentText };
+      dispatch(
+        updateTweet({
+          id: openCommentTweetId,
+          comments: [
+            ...tweets.find((tweet) => tweet.id === openCommentTweetId).comments,
+            newComment,
+          ],
         })
       );
       setCommentText("");
@@ -91,12 +94,10 @@ export default function MainContainer() {
     }
   };
 
-  // Close the comment box without posting a comment
   const handleCancelComment = () => {
     setCommentText("");
     setOpenCommentTweetId(null);
   };
-  // --- END COMMENT FUNCTIONALITY ---
 
   // "Who to Follow" Section
   const whoToFollow = [
@@ -117,26 +118,24 @@ export default function MainContainer() {
       bio: "Frontend Developer, React Enthusiast, Open-source Contributor",
     },
   ];
+
   const handleClearTweets = () => {
-    setTweets([]);
+    dispatch(clearTweets());
   };
-  // Follow state for each user (keyed by user id)
-  const [followStates, setFollowStates] = useState({});
+
+  // Follow state management
   const handleFollowClick = (id) => {
-    setFollowStates((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    dispatch(toggleFollow(id));
   };
 
   return (
-    <div className="flex flex-col w-full   border-x border-gray-200 bg-gray-200">
+    <div className="flex flex-col w-full border-x border-gray-200 bg-gray-200">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200  bg-white">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
         <h2 className="text-lg font-bold">Home</h2>
         <FaMagic
           onClick={handleClearTweets}
-          className="text-[#198ED6] cursor-pointer "
+          className="text-[#198ED6] cursor-pointer"
         />
       </div>
 
@@ -146,7 +145,7 @@ export default function MainContainer() {
           <img
             src={profile}
             alt="User Avatar"
-            className="w-10 h-10 rounded-full  bg-gray-200"
+            className="w-10 h-10 rounded-full bg-gray-200"
           />
           <div className="flex gap-1 h-26 flex-col w-full relative">
             <input
@@ -156,16 +155,15 @@ export default function MainContainer() {
               onChange={(e) => setTweetText(e.target.value)}
               className="w-full text-base my-3 font-semibold text-gray-500 border-none focus:ring-0 outline-none"
             />
-            <div className="flex justify-between items-center mt-3 text-[#198ED6] ">
-              <div className="flex space-x-3 ">
-                {/* File input trigger */}
+            <div className="flex justify-between items-center mt-3 text-[#198ED6]">
+              <div className="flex space-x-3">
                 <FaPlus
                   className="cursor-pointer text-xl"
                   onClick={() => fileInputRef.current.click()}
                 />
                 <FaRegFile className="cursor-pointer text-xl fill-current" />
                 <FaSmile
-                  className="cursor-pointer text-xl  "
+                  className="cursor-pointer text-xl"
                   onClick={() => setEmojiPickerVisible(!emojiPickerVisible)}
                 />
                 <FaCalendarCheck className="cursor-pointer text-xl" />
@@ -218,8 +216,10 @@ export default function MainContainer() {
                     className="flex items-center space-x-1 cursor-pointer hover:text-blue-500"
                     onClick={() => handleOpenCommentBox(tweet.id)}
                   >
-                    <FaRegComment /> <span></span>
+                    <FaRegComment />
+                    <span>{tweet.comments.length}</span>{" "}
                   </div>
+
                   <div className="flex items-center space-x-1 cursor-pointer hover:text-green-500">
                     <FaRetweet /> <span>0</span>
                   </div>
@@ -250,7 +250,6 @@ export default function MainContainer() {
                     <FaShare />
                   </div>
                 </div>
-                {/* Show Comments Modal for the Tweet */}
                 {openCommentTweetId === tweet.id && (
                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border p-4 w-80 rounded-md shadow-lg">
                     <h3 className="font-semibold">Comments</h3>
@@ -292,12 +291,16 @@ export default function MainContainer() {
         ))}
       </div>
 
-      {/* Who to Follow Section */}
-      <div className="border-t border-gray-200 bg-white my-6">
+      {/* Follow Section */}
+
+      <div className="border-t border-gray-200 bg-white my-6 ">
         <h2 className="font-bold text-lg p-4">Who to follow</h2>
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-gray-200 ">
           {whoToFollow.map((user) => (
-            <div key={user.id} className="p-4 flex items-start space-x-4">
+            <div
+              key={user.id}
+              className="p-4 flex items-start space-x-4 hover:bg-gray-100"
+            >
               <img
                 src={profile}
                 alt="User Avatar"
